@@ -19,13 +19,7 @@
     $filteredNumbers = [];
     foreach ($lines as $line) {
         $parsedLine = str_replace(array_values($map), array_keys($map), $line);
-
-        $numbers = array_values(
-            array_filter(
-                str_split($parsedLine), fn(string $char) => in_array($char, $integers)
-            )
-        );
-
+        $numbers = array_values(array_filter(str_split($parsedLine), fn(string $char) => in_array($char, $integers)));
         $filteredNumbers[] = "{$numbers[0]}{$numbers[count($numbers) - 1]}";
     }
 
