@@ -15,25 +15,19 @@
         'o1ne' => 'one'
     ];
 
-    $parsedLines = array_map(
-        fn (string $line) => str_replace(
-            array_values($map),
-            array_keys($map),
-            $line
-        ),
-        $lines
-    );
-
     $integers = range(1, 9);
-    $numbers = array_map(
-        fn(string $line) => array_values(array_filter(str_split($line), fn(string $char) => in_array($char, $integers))),
-        $parsedLines
-    );
+    $filteredNumbers = [];
+    foreach ($lines as $line) {
+        $parsedLine = str_replace(array_values($map), array_keys($map), $line);
 
-    $filtered = array_map(
-        fn (array $sub) => "{$sub[0]}{$sub[count($sub) - 1]}",
-        $numbers
-    );
+        $numbers = array_values(
+            array_filter(
+                str_split($parsedLine), fn(string $char) => in_array($char, $integers)
+            )
+        );
 
-    var_dump(array_sum($filtered));
+        $filteredNumbers[] = "{$numbers[0]}{$numbers[count($numbers) - 1]}";
+    }
+
+    var_dump(array_sum($filteredNumbers));
 })();
