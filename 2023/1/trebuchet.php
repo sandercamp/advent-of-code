@@ -15,12 +15,12 @@
         'o1ne' => 'one'
     ];
 
-    $filteredNumbers = [];
+    $result = 0;
     foreach ($lines as $line) {
         $parsedLine = str_replace(array_values($map), array_keys($map), $line);
         $numbers = str_split(filter_var($parsedLine, FILTER_SANITIZE_NUMBER_INT));
-        $filteredNumbers[] = "{$numbers[0]}{$numbers[count($numbers) - 1]}";
+        $result += intval("{$numbers[0]}{$numbers[count($numbers) - 1]}");
     }
 
-    var_dump(array_sum($filteredNumbers));
+    var_dump($result);
 })();
