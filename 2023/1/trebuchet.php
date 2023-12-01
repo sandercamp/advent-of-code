@@ -15,11 +15,10 @@
         'o1ne' => 'one'
     ];
 
-    $integers = range(1, 9);
     $filteredNumbers = [];
     foreach ($lines as $line) {
         $parsedLine = str_replace(array_values($map), array_keys($map), $line);
-        $numbers = array_values(array_filter(str_split($parsedLine), fn(string $char) => in_array($char, $integers)));
+        $numbers = str_split(filter_var($parsedLine, FILTER_SANITIZE_NUMBER_INT));
         $filteredNumbers[] = "{$numbers[0]}{$numbers[count($numbers) - 1]}";
     }
 
