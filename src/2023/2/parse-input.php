@@ -2,37 +2,26 @@
 
 function parseInput(): array {
     $lines = file('src/2023/2/input.txt');
-
+    $colors = ['green', 'red', 'blue'];
     $parsedInput = [];
     foreach ($lines as $line) {
         [$game, $sets] = explode(':', str_replace(' ', '', $line));
         $id = (int) str_replace('Game', '', $game);
-        $chunks = explode(';', $sets);
-
-        foreach ($chunks as $chunk) {
-            $colors = explode(',', $chunk);
-            $red = $blue = $green = 0;
-            foreach ($colors as $color) {
-                if (strpos($color, 'green')) {
-                    $green = (int) $color;
-                }
-
-                if (strpos($color, 'blue')) {
-                    $blue = (int) $color;
-                }
-
-                if (strpos($color, 'red')) {
-                    $red = (int) $color;
+        foreach (explode(';', $sets) as $set) {
+            $result = array_fill_keys($colors, 0);
+            foreach (explode(',', $set) as $part) {
+                foreach ($colors as $color) {
+                    if (strpos($part, $color)) {
+                        $result[$color] = (int)$part;
+                    }
                 }
             }
 
-            $parsedInput[$id][] = [
-                'red' => $red,
-                'green' => $green,
-                'blue' => $blue
-            ];
+            $parsedInput[$id][] = $result;
         }
     }
+
+    var_dump($parsedInput);
 
     return $parsedInput;
 }
