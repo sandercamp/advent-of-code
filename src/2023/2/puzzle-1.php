@@ -4,21 +4,15 @@ require_once('parse-input.php');
 
 $parsedInput = parseInput();
 
-$maxRed = 12;
-$maxGreen = 13;
-$maxBlue = 14;
-
-$isValid = function (int $max, array $set) {
-    return count(array_filter($set, fn($i) => $i > $max)) === 0;
-};
-
+$colors = ['green' => 13, 'red' => 12, 'blue' => 14];
 $result = 0;
 foreach ($parsedInput as $id => $game) {
-    $greenValid = $isValid($maxGreen, array_column($game, 'green'));
-    $redValid = $isValid($maxRed, array_column($game, 'red'));
-    $blueValid = $isValid($maxBlue, array_column($game, 'blue'));
+    $validColors = [];
+    foreach ($colors as $color => $max) {
+        $validColors[$color] = count(array_filter(array_column($game, $color), fn($i) => $i > $max)) === 0;
+    }
 
-    if ($greenValid && $blueValid && $redValid) {
+    if (!in_array(false, $validColors, true)) {
         $result += $id;
     }
 }
