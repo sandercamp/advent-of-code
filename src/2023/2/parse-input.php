@@ -21,7 +21,5 @@ function parseInput(): array {
         }
     }
 
-    var_dump($parsedInput);
-
     return $parsedInput;
 }
