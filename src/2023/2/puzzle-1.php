@@ -1,6 +1,6 @@
 <?php
 
-require_once('parse_input.php');
+require_once('parse-input.php');
 
 $parsedInput = parseInput();
 

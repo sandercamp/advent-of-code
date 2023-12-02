@@ -1,7 +1,7 @@
 <?php
 
 function parseInput(): array {
-    $lines = file('2023/2/input.txt');
+    $lines = file('src/2023/2/input.txt');
 
     $parsedInput = [];
     foreach ($lines as $line) {

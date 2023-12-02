@@ -1,7 +1,7 @@
 <?php
 
 (function() {
-    $lines = file('2023/1/input.txt');
+    $lines = file('src/2023/1/input.txt');
 
     $map = [
         'ni9ne' => 'nine',
