@@ -5,16 +5,13 @@ function parseInput(): array {
 
     $parsedInput = [];
     foreach ($lines as $line) {
-        $trimmed = str_replace(' ', '', $line);
-        [$game, $sets] = explode(':', $trimmed);
+        [$game, $sets] = explode(':', str_replace(' ', '', $line));
         $id = (int) str_replace('Game', '', $game);
         $chunks = explode(';', $sets);
 
         foreach ($chunks as $chunk) {
             $colors = explode(',', $chunk);
-            $red = 0;
-            $blue = 0;
-            $green = 0;
+            $red = $blue = $green = 0;
             foreach ($colors as $color) {
                 if (strpos($color, 'green')) {
                     $green = (int) $color;
