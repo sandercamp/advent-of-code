@@ -3,30 +3,21 @@
 require_once('helpers.php');
 
 $lines = parseInput();
-
-$allSymbols = [];
-
 $symbolMatcher = fn($char) => $char === '*';
-
-foreach ($lines as $lineNumber => $line) {
-    $allSymbols[$lineNumber] = findMatches($line, $symbolMatcher);
-}
-
 $result = 0;
-foreach ($allSymbols as $lineNumber => $lineSymbols) {
-    foreach ($lineSymbols as $symbol) {
+foreach ($lines as $lineNumber => $line) {
+    $symbols = findMatches($line, $symbolMatcher);
+    foreach ($symbols as $symbol) {
         $matches = [$symbol, $symbol - 1, $symbol + 1];
         $productNumbers = [];
-        // Current line
+        // TODO: The same lines are parsed twice
         $numberMaps = array_merge(
-            findNumbers($lines[$lineNumber]) ?? [],
+            findNumbers($line) ?? [],
             findNumbers($lines[$lineNumber - 1]) ?? [],
             findNumbers($lines[$lineNumber + 1]) ?? [],
         );
 
-        foreach ($numberMaps as $numberMap) {
-            ['number' => $number, 'keys' => $keys] = $numberMap;
-
+        foreach ($numberMaps as ['number' => $number, 'keys' => $keys]) {
             if (count($productNumbers) > 2) {
                 break;
             }
