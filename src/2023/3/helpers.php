@@ -7,24 +7,16 @@ function parseInput(): array {
 function findNumbers(string $line): array {
     $numbers = [];
     $rawDigits = array_filter(str_split($line), fn($char) => is_numeric($char));
-
     foreach ($rawDigits as $key => $rawDigit) {
-        if (isset($numbers[$key - 1])) {
-            $numbers[$key]['keys'][] = $key;
-            $numbers[$key]['number'] = "{$numbers[$key-1]['number']}{$rawDigit}";
+        $previous = $key - 1;
+        $isAddition = isset($numbers[$previous]);
 
-            $numbers[$key] = [
-                'number' => (int)"{$numbers[$key-1]['number']}{$rawDigit}",
-                'keys' => [...$numbers[$key-1]['keys'], $key]
-            ];
+        $numbers[$key] = [
+            'number' => $isAddition ? (int)"{$numbers[$previous]['number']}{$rawDigit}" : $rawDigit,
+            'keys' => $isAddition ? [...$numbers[$previous]['keys'], $key] : [$key]
+        ];
 
-            unset($numbers[$key - 1]);
-        } else {
-            $numbers[$key] = [
-                'number' => $rawDigit,
-                'keys' => [$key]
-            ];
-        }
+        unset($numbers[$previous]);
     }
 
     return $numbers;

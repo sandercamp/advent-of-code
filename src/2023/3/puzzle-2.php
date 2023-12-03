@@ -3,7 +3,7 @@
 require_once('helpers.php');
 
 $lines = parseInput();
-$symbolMatcher = fn($char) => $char === '*';
+$symbolMatcher = fn(string $char): bool => $char === '*';
 $result = 0;
 foreach ($lines as $lineNumber => $line) {
     $symbols = findMatches($line, $symbolMatcher);
@@ -18,12 +18,12 @@ foreach ($lines as $lineNumber => $line) {
         );
 
         foreach ($numberMaps as ['number' => $number, 'keys' => $keys]) {
-            if (count($productNumbers) > 2) {
-                break;
-            }
-
             if (array_intersect($matches, $keys)) {
                 $productNumbers[] = $number;
+            }
+
+            if (count($productNumbers) > 2) {
+                break;
             }
         }
 
