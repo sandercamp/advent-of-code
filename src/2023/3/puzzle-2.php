@@ -16,42 +16,23 @@ $result = 0;
 foreach ($allSymbols as $lineNumber => $lineSymbols) {
     foreach ($lineSymbols as $symbol) {
         $matches = [$symbol, $symbol - 1, $symbol + 1];
-
         $productNumbers = [];
         // Current line
-        $numberMaps = findNumbers($lines[$lineNumber]);
+        $numberMaps = array_merge(
+            findNumbers($lines[$lineNumber]) ?? [],
+            findNumbers($lines[$lineNumber - 1]) ?? [],
+            findNumbers($lines[$lineNumber + 1]) ?? [],
+        );
 
         foreach ($numberMaps as $numberMap) {
             ['number' => $number, 'keys' => $keys] = $numberMap;
 
+            if (count($productNumbers) > 2) {
+                break;
+            }
+
             if (array_intersect($matches, $keys)) {
                 $productNumbers[] = $number;
-            }
-        }
-
-        // Previous line
-        if (isset($lines[$lineNumber -1])) {
-            $numberMaps = findNumbers($lines[$lineNumber -1]);
-
-            foreach ($numberMaps as $numberMap) {
-                $number = $numberMap['number'];
-                $keys = $numberMap['keys'];
-                if (array_intersect($matches, $keys)) {
-                    $productNumbers[] = $number;
-                }
-            }
-        }
-
-        // Next line
-        if (isset($lines[$lineNumber + 1])) {
-            $numberMaps = findNumbers($lines[$lineNumber + 1]);
-
-            foreach ($numberMaps as $numberMap) {
-                $number = $numberMap['number'];
-                $keys = $numberMap['keys'];
-                if (array_intersect($matches, $keys)) {
-                    $productNumbers[] = $number;
-                }
             }
         }
 
@@ -61,6 +42,6 @@ foreach ($allSymbols as $lineNumber => $lineSymbols) {
     }
 }
 
-//var_dump($result === 79844424);
+var_dump($result === 79844424);
 
-var_dump($result); // 79844424
+//var_dump($result); // 79844424
