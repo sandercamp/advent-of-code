@@ -27,10 +27,10 @@ function doubleConsecutive(int $n): int {
         );
 }
 
-function countCards(array &$matches, int $matchId): int {
-    $result = count($matches[$matchId]['keys']);
+function countCards(array $matches, int $matchId): int {
+    $result = count($matches[$matchId]);
 
-    foreach ($matches[$matchId]['keys'] as $key) {
+    foreach ($matches[$matchId] as $key) {
         $result += countCards($matches, $key);
     }
 
