@@ -11,9 +11,11 @@ foreach ($cards as $id => [$drawnNumbers, $winningNumbers]) {
     $matches[$id] = $count !== 0 ? array_filter(range($id + 1, $id + $count), fn(int $i) => isset($cards[$i])) : [];
 }
 
+$cardCounter = new CardCounter($matches);
+
 $result = count($cards);
 foreach ($matches as $id => $match) {
-    $result += countCards($matches, $id);
+    $result += $cardCounter->countCards($id);
 }
 
 var_dump($result);

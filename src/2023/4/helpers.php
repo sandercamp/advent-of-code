@@ -27,12 +27,32 @@ function doubleConsecutive(int $n): int {
         );
 }
 
-function countCards(array $matches, int $matchId): int {
-    $result = count($matches[$matchId]);
+class CardCounter {
+    private array $referenceMap = [];
+    private array $cards;
 
-    foreach ($matches[$matchId] as $key) {
-        $result += countCards($matches, $key);
+    public function __construct(array $cards)
+    {
+        $this->cards = $cards;
     }
 
-    return $result;
+    public function countCards(int $id): int {
+        if ($this->referenceExists($id)) {
+            return $this->referenceMap[$id];
+        }
+
+        $result = count($this->cards[$id]);
+        foreach ($this->cards[$id] as $key) {
+            $result += $this->countCards($key);
+        }
+
+        $this->referenceMap[$id] = $result;
+
+        return $result;
+    }
+
+    private function referenceExists(int $id): bool
+    {
+        return isset($this->referenceMap[$id]);
+    }
 }
