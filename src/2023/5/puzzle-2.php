@@ -3,9 +3,6 @@
 require_once('src/util.php');
 require_once('helpers.php');
 
-
-
-
 run(
     function() {
         $maps = parseInputTwo();
@@ -14,14 +11,14 @@ run(
         while (true) {
             $x = $location;
             foreach ($maps as $map) {
-                foreach ($map as [$destination, $source, $length]) {
+                foreach ($map as [$destination, $maxD, $source, $maxSource, $dist]) {
                     if ($x == $destination) {
                         $x = $source;
                         break;
                     }
 
-                    if ($x >= $destination && $x <= $destination + $length) {
-                        $x = $x - ($destination - $source);
+                    if ($x >= $destination && $x <= $maxD) {
+                        $x = $x - $dist;
                         break;
                     }
                 }

@@ -1,7 +1,7 @@
 <?php
 
 function parseInput(): array {
-    $input = preg_split("#\n\s*\n#Uis", file_get_contents('src/2023/5/test.txt'));
+    $input = preg_split("#\n\s*\n#Uis", file_get_contents('src/2023/5/input.txt'));
 
     $seeds = parseIntegers(array_shift($input));
 
@@ -38,9 +38,23 @@ function parseInputTwo(): array {
         'humidity-to-location'
     ];
 
+    array_multisort($seedRanges, SORT_ASC);
+
     $maps = ['seedRanges' => $seedRanges];
     foreach ($categories as $index => $category) {
-        $maps[$category] = array_chunk(parseIntegers($input[$index]), 3);
+        $chunks = array_chunk(parseIntegers($input[$index]), 3);
+
+        $maps[$category] = array_map(fn(array $chunk) => [
+                (int)$chunk[0],
+                (int)$chunk[0] + $chunk[2],
+                (int)$chunk[1],
+                $chunk[1] + $chunk[2],
+                (int)$chunk[0] - $chunk[1]
+            ],
+            $chunks
+        );
+
+        array_multisort($maps[$category] , SORT_ASC);
     }
 
     return array_reverse($maps);
