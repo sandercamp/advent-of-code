@@ -3,13 +3,11 @@
 require_once('src/util.php');
 require_once('helpers.php');
 
-ini_set('memory_limit', '1024M');
-
 run(
     function() {
         $maps = parseInput();
         $seeds = array_shift($maps);
-        $locations = [];
+        $result = null;
         foreach ($seeds as $seed) {
             $current = (int)$seed;
             foreach ($maps as $map) {
@@ -26,10 +24,10 @@ run(
                 }
             }
 
-            $locations[] = $current;
+            if ($result === null || $current < $result) {
+                $result = $current;
+            }
         }
-
-        $result = min($locations);
 
         echo "Result: {$result}\n"; // 331445006
     }
