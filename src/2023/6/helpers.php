@@ -1,7 +1,7 @@
 <?php
 
 function parseInput(): array {
-    $lines = file('src/2023/6/input.txt');
+    $lines = file('src/2023/6/test.txt');
 
     $times = parseIntegers($lines[0]);
     $distances = parseIntegers($lines[1]);

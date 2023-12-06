@@ -10,27 +10,15 @@ run(
         $result = 1;
         foreach ($times as $index => $time) {
             $record = $distances[$index];
-
-            $mid = floor($time / 2);
-
-            $first = 0;
-            for ($i = 0; $i <= $mid; $i++) {
-                $remainder = $time - $i;
-                $dist = $remainder * $i;
-
-                if ($dist > $record) {
-                    $first = $i;
+            for ($i = ceil($record / (int)$time); $i <= floor($time / 2); $i++) {
+                if ($i * ($time - $i) > $record) {
+                    $result *= ($time - $i) - ($i - 1);;
                     break;
                 }
             }
 
-            $last = $time - $first;
-            $times = $last - ($first - 1);
-
-            $result *= $times;
         }
 
-
-        echo "Result: {$result}\n"; // Test: 71503
+        echo "Result: {$result}\n"; // Test: 71503 | Part Two: 32607562
     }
 );
