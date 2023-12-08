@@ -22,5 +22,5 @@ function parseInput(): array {
 }
 
 function endsWithZ(string $string): bool {
-    return substr($string, -1) === 'Z';
+    return str_ends_with($string, 'Z');
 }

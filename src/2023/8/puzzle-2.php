@@ -11,11 +11,6 @@ run(
             $steps = 0;
             $current = $node;
 
-            if (endsWithZ($current)) {
-                $countToZ[$node] = $steps;
-                continue;
-            }
-
             while(true) {
                 foreach ($instructions as $instruction) {
                     $steps++;
@@ -29,10 +24,11 @@ run(
             }
         }
 
-        $result = 1;
-        foreach ($countToZ as $c) {
-            $result = gmp_lcm($result, $c);
-        }
+        $result = array_reduce(
+            $countToZ,
+            fn (GMP $carry, int $count) => gmp_lcm($carry, $count),
+            gmp_init(1)
+        );
 
         echo "Result: {$result}\n"; // Test: 6 | Input: 9858474970153
     }
