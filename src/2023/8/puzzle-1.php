@@ -8,19 +8,16 @@ run(
         [$instructions, $parsedMaps] = parseInput();
 
         $steps = 0;
-        $current = 'VGA';
+        $current = 'AAA';
         while(true) {
             foreach ($instructions as $instruction) {
                 $steps++;
                 $current = $parsedMaps[$current][$instruction];
-                if (endsWithZ($current)) {
+                if ($current === 'ZZZ') {
                     break 2;
                 }
             }
         }
-
-        var_dump($current);
-        var_dump($parsedMaps[$current]);
 
         echo "Result: {$steps}\n"; // Test:  6 | Input: 11567
     }
