@@ -1,31 +1,15 @@
 <?php
 
-function parseInput(): array {
+function parseInput(bool $reverse = false): array {
     $lines = file('input.txt');
 
     $parsedInput = [];
     foreach ($lines as $line) {
-        $parsedInput[] = explode(" ", $line);
+        $parsedLine = explode(" ", $line);
+        $parsedInput[] = $reverse ? array_reverse($parsedLine) : $parsedLine;
     }
 
     return $parsedInput;
-}
-
-function parseInputTwo(): array {
-    $lines = file('input.txt');
-
-    $parsedInput = [];
-    foreach ($lines as $line) {
-        $parsedInput[] = array_reverse(explode(" ", $line));
-    }
-
-    return $parsedInput;
-}
-
-function parseIntegers(string $string): array {
-    preg_match_all('!\d+!', $string, $matches);
-
-    return $matches[0] ?? [];
 }
 
 function sumExtrapolation(array $sequences): int {
