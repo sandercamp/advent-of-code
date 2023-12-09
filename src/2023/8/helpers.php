@@ -1,7 +1,7 @@
 <?php
 
 function parseInput(): array {
-    [$instructions, $maps] = preg_split("#\n\s*\n#Uis", file_get_contents('src/2023/8/input.txt'));
+    [$instructions, $maps] = preg_split("#\n\s*\n#Uis", file_get_contents('./input.txt'));
 
     $instructions = str_split(str_replace(['L', 'R'], [0, 1], trim($instructions)));
 
@@ -19,8 +19,4 @@ function parseInput(): array {
     }
 
     return [$instructions, $parsedMaps, $startingNodes];
-}
-
-function endsWithZ(string $string): bool {
-    return str_ends_with($string, 'Z');
 }

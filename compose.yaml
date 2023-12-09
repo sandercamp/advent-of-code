@@ -10,4 +10,5 @@ services:
     image: composer
     volumes:
       - .:/app
+      - .:/opt/project
     working_dir: /app

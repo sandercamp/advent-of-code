@@ -1,6 +1,6 @@
 <?php
 
-require_once('src/util.php');
+require_once('../../util.php');
 require_once('helpers.php');
 
 run(

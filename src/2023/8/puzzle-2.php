@@ -1,6 +1,6 @@
 <?php
 
-require_once('src/util.php');
+require_once('../../util.php');
 require_once('helpers.php');
 
 run(
@@ -16,7 +16,7 @@ run(
                     $steps++;
                     $current = $parsedMaps[$current][$instruction];
 
-                    if (endsWithZ($current)) {
+                    if (str_ends_with($current, 'Z')) {
                         $countToZ[$node] = $steps;
                         break 2;
                     }
