@@ -38,13 +38,9 @@ function sumExtrapolation(array $sequences): int {
 
 function extrapolate(array $sequence) {
     $diffSequence = [];
-    foreach ($sequence as $i => $current) {
-        if (isset($sequence[$i + 1])) {
-            $diffSequence[] = $sequence[$i + 1] - $current;
-        }
+    for ($i = 0; $i < count($sequence) - 1; $i++) {
+        $diffSequence[] = $sequence[$i + 1] - $sequence[$i];
     }
 
-    $result = count(array_diff($diffSequence, [0])) ? extrapolate($diffSequence) : 0;
-
-    return $result + end($diffSequence);
+    return (count(array_diff($diffSequence, [0])) ? extrapolate($diffSequence) : 0) + end($diffSequence);
 }
