@@ -16,19 +16,17 @@ run(
         $lines = preg_split("/\r\n|\n|\r/", trim(chunk_split($overlay, $lineLength)));
 
         $result = 0;
+        $bounds = ['|', 'L', 'J'];
         foreach ($lines as $line) {
-            $lastPos = 0;
-            while (($lastPos = strpos($line, '*', $lastPos)) !== false) {
-                $x = substr_count($line, '|', 0, $lastPos);
-                $l = substr_count($line, 'L', 0, $lastPos);
-                $j = substr_count($line, 'J', 0, $lastPos);
-
-                $y = $x + $l + $j;
-                if ($y % 2 !== 0) {
+            $i = 0;
+            while (($i = strpos($line, '*', $i)) !== false) {
+                $reducer = fn(int $c, string $char) => $c + substr_count($line, $char, 0, $i);
+                $count = array_reduce($bounds, $reducer, 0);
+                if ($count % 2 !== 0) {
                     $result++;
                 }
 
-                $lastPos += 1;
+                $i++;
             }
         }
 
