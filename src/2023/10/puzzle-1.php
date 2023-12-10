@@ -10,11 +10,11 @@ run(
 
         // Dirty: only works on test and puzzle input data
         $currentIndex = $sPosition + 1;
-        $steps = ['S'];
+        $steps = [$sPosition];
         $previousIndex = $sPosition;
         while(true) {
             $currentPipe = getPipe($loopMap, $currentIndex);
-            $steps[] = $currentPipe;
+            $steps[] = $currentIndex;
             $nextIndex = $currentIndex + $directionMap[$currentPipe][$previousIndex - $currentIndex];
 
             if ($nextIndex === $sPosition) {
