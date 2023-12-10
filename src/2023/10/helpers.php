@@ -6,10 +6,8 @@ function parseInput(): array {
     $loopMap = '';
     $l = 0;
     foreach ($lines as $line) {
-        $trimmed = trim($line);
+        $loopMap .= $trimmed = trim($line);
         $l = strlen($trimmed);
-
-        $loopMap .= trim($trimmed);
     }
 
     $directionMap = [
@@ -21,7 +19,7 @@ function parseInput(): array {
         'F' => [$l => 1, 1 => $l]
     ];
 
-    return [$loopMap, $directionMap];
+    return [$loopMap, $directionMap, $l];
 }
 
 function getPipe(string $map, int $offset): ?string
@@ -31,4 +29,26 @@ function getPipe(string $map, int $offset): ?string
     }
 
     return substr($map, $offset, 1);
+}
+
+function drawLoop(string $map, array $directions): array {
+    $start = strpos($map, 'S');
+
+    // Dirty: only works on test and puzzle input data
+    $current = $start + 1;
+    $steps = [$start];
+    $previous = $start;
+    while(true) {
+        $steps[] = $current;
+        $next = $current + $directions[getPipe($map, $current)][$previous - $current];
+
+        if ($next === $start) {
+            break;
+        }
+
+        $previous = $current;
+        $current = $next;
+    }
+
+    return $steps;
 }
