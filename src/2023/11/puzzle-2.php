@@ -33,7 +33,6 @@ run(
         }
 
         // Calculate distances
-
         $dist = [];
         $result = 0;
         foreach ($galaxies as $i => ['x' => $x1, 'y' => $y1]) {
@@ -45,6 +44,6 @@ run(
             }
         }
 
-        echo "Result: {$result}\n"; // Test: 1030 (10) 8410 (100) | Input: ?
+        echo "Result: {$result}\n"; // Test: 1030 (10) 8410 (100) | Input: 702770569197
     }
 );
