@@ -30,37 +30,55 @@ function generate(string $string, array $groups, $offset = 0): int {
     $matches = [];
 
     $total = 0;
+    $remainders = [];
     foreach ($groups as $group) {
         $total += strlen($group);
+    }
+
+    $remainder = $total;
+    foreach ($groups as $g => $group) {
+        $remainders[$g] = $remainder;
+        $remainder -= strlen($group);
     }
 
     $l = strlen($string);
     for ($i = 0; $i <= $l; $i++) {
         $offset = $i;
-        $remainder = $total;
         for ($g = 0; $g < count($groups); $g++) {
             $subString = $groups[$g];
 
-            if ($remainder < available(substr($string, $offset))) {
-                continue;
+            if ($g === 0) {
+                var_dump('Remainder: ' . $remainders[$g]);
+                var_dump('Available: ' . available(substr($string, $offset)));
             }
 
-            if (isMatch(substr($string, $offset, strlen($subString)), $subString)) {
+            if ($remainders[$g] > available(substr($string, $offset))) {
+                continue;
+            }
+            if ($g === 0) {
+                var_dump($offset);
+                var_dump('sub: ' . $subString);
+                var_dump('match: ' . isMatch($string, $offset, $subString));
+            }
+
+
+            if (isMatch($string, $offset, $subString)) {
+
+
                 $matches[$g][$offset] = $subString;
             }
 
             $offset = $offset + strlen($subString);
-            $remainder = $remainder - strlen($subString);
         }
     }
 
-    for ($m = 0; $m < count($matches) - 1; $m++) {
-        foreach ($matches[$m] as $offset => $match) {
-            if (overlaps($matches[$m + 1], [$offset, $match])) {
-                unset($matches[$m][$offset]);
-            }
-        }
-    }
+//    for ($m = 0; $m < count($matches) - 1; $m++) {
+//        foreach ($matches[$m] as $offset => $match) {
+//            if (overlaps($matches[$m + 1], [$offset, $match])) {
+//                unset($matches[$m][$offset]);
+//            }
+//        }
+//    }
 
     var_dump($matches);die;
 
@@ -96,14 +114,16 @@ function overlaps(array $matches, array $match): bool {
     return false;
 }
 
-function isMatch(string $a, string $b): bool {
-    if ($a === $b) {
-        return true;
-    }
+function isMatch(string $string, int $offset, string $sub): bool {
+    $x = substr($string, $offset, strlen($sub));
 
-    if (strlen($a) === strlen($b)) {
-        for ($i = 0; $i < strlen($b); $i++) {
-            if (!($a[$i] === '?' || $a[$i] === $b[$i])) {
+    if (strlen($x) === strlen($sub)) {
+        if ($offset > 0 && $string[$offset - 1] == '#') {
+            return false;
+        }
+
+        for ($i = 0; $i < strlen($sub); $i++) {
+            if (!($x[$i] === '?' || $x[$i] === $sub[$i])) {
                 return false;
             }
         }
@@ -115,22 +135,72 @@ function isMatch(string $a, string $b): bool {
 }
 
 
-function generateB(string $string, array $chars, array $positions) {
-    $result = [];
+function generateB(string $string, array $groups, $offset = 0): array {
+    $matches = [];
 
-    foreach (['.', '#'] as $char) {
-        foreach ($positions as $key => $position) {
-            $permutation = substr_replace($string, $char, $position, 1);
+    for ($i = 0; $i <= strlen($string); $i++) {
+        $offset = $i;
+        for ($g = 0; $g < count($groups); $g++) {
+            $subString = $groups[$g];
 
+            if (isMatch($string, $offset, $subString)) {
+                $matches[$g][] = [$offset, $subString];
+            }
 
-            $otherPositions = $positions;
-            unset($otherPositions[$key]);
-
-            $result = [...$result, $permutation, ...generate($permutation, $chars, $otherPositions)];
+            $offset = $offset + strlen($subString);
         }
     }
 
-    return array_unique(array_filter($result, fn(string $string) => !strpos($string, '?')));
+    $strings = combinations($string, $matches);
+
+    var_dump($strings);die;
+    return $result;
+}
+
+function generateStrings(array $matches, array $groups) {
+
+}
+
+function combinations(string $string, $arrays, $i = 0) {
+    if (!isset($arrays[$i])) {
+        return array();
+    }
+    if ($i == count($arrays) - 1) {
+        return $arrays[$i];
+    }
+
+    // get combinations from subsequent arrays
+    $tmp = combinations($string, $arrays, $i + 1);
+
+    $result = array();
+
+    // concat each array from tmp with each element from $arrays[$i]
+    foreach ($arrays[$i] as [$offset, $sub]) {
+        foreach ($tmp as $string) {
+            $result[] = substr_replace($string, $sub, $offset, strlen($sub));
+        }
+    }
+
+    return $result;
+}
+
+function matchesGroups(string $string, array $groups) {
+    $filtered = array_values(array_filter(
+        explode('.', $string),
+        fn (string $string) => substr_count($string, '#')
+    ));
+
+    if (count($filtered) !== count($groups)) {
+        return false;
+    }
+
+    foreach ($groups as $i => $group) {
+        if (substr_count($group, '#') !== substr_count($filtered[$i], '#')) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 
