@@ -8,11 +8,13 @@ run(
         $input = parseInput();
 
         $result = 0;
-        foreach ($input as [$springs, $groups, $brokenSprings]) {
-            var_dump(generateB($springs, $groups));die;
-            //$result += generateB($springs, $groups);
+        foreach ($input as [$springs, $groups]) {
+            $permutations = generatePermutations($springs);
+            $filtered = array_unique(array_filter($permutations, fn(string $string) => matchesGroups($string, $groups)));
+
+            $result += count($filtered);
         }
 
-        echo "Result: {$result}\n"; // Test: 20 | Input: ?
+        echo "Result: {$result}\n"; // Test: 21 | Input: 8193
     }
 );
