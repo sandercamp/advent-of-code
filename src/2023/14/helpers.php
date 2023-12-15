@@ -1,7 +1,7 @@
 <?php
 
 function parseInput(): array {
-    return file('input.txt');
+    return file('test.txt');
 }
 
 function turn(array $lines) {
