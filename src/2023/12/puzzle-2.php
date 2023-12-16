@@ -12,7 +12,7 @@ run(
 
         $result = 0;
         foreach ($input as [$springs, $groups]) {
-            $permutations = generatePermutations($springs);
+            $permutations = generatePermutations($springs, $groups);
             $filtered = array_unique(array_filter($permutations, fn(string $string) => matchesGroups($string, $groups)));
 
             $result += count($filtered);

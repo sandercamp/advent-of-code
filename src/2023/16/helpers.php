@@ -1,38 +1,36 @@
 <?php
 
 function parseInput(): array {
-    $lines = file('input.txt');
+    $lines = file('test.txt');
 
-    $loopMap = '';
+    $map = '';
     $l = 0;
+    $tileCount = 0;
     foreach ($lines as $line) {
-        $loopMap .= $trimmed = trim($line);
+        $map .= $trimmed = trim($line);
         $l = strlen($trimmed);
+        $tileCount += $l;
     }
 
+    $tiles = array_fill(0, $tileCount, 0);
+
+    // Negative is l => r and u => d
     $directionMap = [
+        '/' => [-$l => -1, $l => 1, -1 => -$l, 1 => $l],
+        '\\' => [-$l => 1, 1 => -$l, -1 => $l, $l => -1],
         '|' => [-$l => $l, $l => -$l],
         '-' => [-1 => 1, 1 => -1],
-        'L' => [-$l => 1, 1 => -$l],
-        'J' => [-1 => -$l, -$l => -1],
-        '7' => [-1 => $l, $l => -1],
-        'F' => [$l => 1, 1 => $l]
     ];
 
-    return [$loopMap, $directionMap, $l];
+    return [$map, $directionMap, $l, $tiles];
 }
 
-function getPipe(string $map, int $offset): ?string
-{
-    if ($offset < 0) {
-        return null;
-    }
 
-    return substr($map, $offset, 1);
-}
+function drawLoop(string $map, array $directions): array {
+    $start = strpos($map, 'S');
 
-function drawBeam(string $map, array $directions): array {
-    $start = $current = 0;
+    // Dirty: only works on test and puzzle input data
+    $current = $start + 1;
     $steps = [$start];
     $previous = $start;
     while(true) {
