@@ -5,68 +5,46 @@ require_once('helpers.php');
 
 run(
     function() {
-        [$map, $directionMap, $l, $tiles] = parseInput();
+        [$map, $directions] = parseInput();
+        $scorecard = $map;
+        $coordinates = [[0, 0, RIGHT]];
+        $moves = [];
+        foreach ($coordinates as &$coordinate) {
+            [$x, $y, $source] = $coordinate;
+            while(isset($map[$x][$y])) {
+                $scorecard[$x][$y] = '#';
 
-        $splits = [[0, 1]];
-        $paths = [];
-        $tiles[0] = 1;
-
-        foreach ($splits as &$split) {
-            [$previous, $offset] = $split;
-            $current = $previous + $offset;
-
-            $min = 0;
-            $max = strlen($map);
-            if (abs($offset) === 1) {
-                $min = $previous - ($previous % $l);
-                $max = $min + ($l - 1);
-            }
-
-            $i = $offset;
-            while($current >= $min && $current <= $max && isset($map[$current])) {
-                if (in_array([$previous, $current], $paths)) {
+                if (in_array([$x, $y, $source], $moves)) {
                     break;
                 }
 
-                $paths[] = [$previous, $current];
+                $moves[] = [$x, $y, $source];
 
-                if ($current === 69) {
-                    die;
-                }
                 $stop = false;
-                $tile = $map[$current];
-                $tiles[$current]++;
+                $direction = $directions[$map[$x][$y]][$source];
 
-                switch ($tile) {
-                    case '/':
-                        $i = $directionMap[$tile][$previous - $current];
+                switch ($direction) {
+                    case UP:
+                        $x--;
                         break;
-                    case '\\':
-                        $i = $directionMap[$tile][$previous - $current];
+                    case DOWN:
+                        $x++;
                         break;
-                    case '-':
-                        if (abs($previous - $current) === $l) {
-                            $splits[] = [$current, - 1];
-                            $splits[] = [$current, 1];
-
-                            $stop = true;
-
-                            break;
-                        }
-
-                        $i = $directionMap[$tile][$previous - $current];
-
+                    case LEFT:
+                        $y--;
                         break;
-                    case '|':
-                        if (abs($previous - $current) === 1) {
-                            $splits[] = [$current, -$l];
-                            $splits[] = [$current, $l];
-
-                            $stop = true;
-                            break;
-                        }
-
-                        $i = $directionMap[$tile][$previous - $current];
+                    case RIGHT:
+                        $y++;
+                        break;
+                    case SPLIT_LEFT_RIGHT:
+                        $coordinates[] = [$x, $y, LEFT];
+                        $coordinates[] = [$x, $y, RIGHT];
+                        $stop = true;
+                        break;
+                    case SPLIT_UP_DOWN:
+                        $coordinates[] = [$x, $y, UP];
+                        $coordinates[] = [$x, $y, DOWN];
+                        $stop = true;
                         break;
                     default:
                         // Do nothing
@@ -76,20 +54,20 @@ run(
                     break;
                 }
 
-                $min = 0;
-                $max = strlen($map);
-                if (abs($i) === 1) {
-                    $min = $current - ($current % $l);
-                    $max = $min + ($l - 1);
-                }
-
-                $previous = $current;
-                $current += $i;
+                $source = $direction;
             }
         }
 
-        $result = count(array_filter($tiles, fn(int $tileCount) => $tileCount > 0));
+        $result = array_reduce(
+            $scorecard,
+            fn(int $carry, array $row) => $carry += array_reduce(
+                $row,
+                fn(int $carry, string $tile) => $carry += $tile === '#' ? 1 : 0,
+                0
+            ),
+            0
+        );
 
-        echo "Result: {$result}\n"; // Test: 46 | Input: 7472 too high
+        echo "Result: {$result}\n"; // Test: 46 | Input: 7472
     }
 );

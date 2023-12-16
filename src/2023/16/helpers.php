@@ -1,28 +1,28 @@
 <?php
 
-function parseInput(): array {
-    $lines = file('test.txt');
+const RIGHT = 'right';
+const LEFT = 'left';
+const UP = 'up';
+const DOWN = 'down';
+const SPLIT_UP_DOWN = 'ud';
+const SPLIT_LEFT_RIGHT = 'lr';
 
-    $map = '';
-    $l = 0;
-    $tileCount = 0;
+function parseInput(): array {
+    $lines = file('input.txt');
+    $map = [];
     foreach ($lines as $line) {
-        $map .= $trimmed = trim($line);
-        $l = strlen($trimmed);
-        $tileCount += $l;
+        $map[] = str_split(trim($line));
     }
 
-    $tiles = array_fill(0, $tileCount, 0);
-
-    // Negative is l => r and u => d
-    $directionMap = [
-        '/' => [-$l => -1, $l => 1, -1 => -$l, 1 => $l],
-        '\\' => [-$l => 1, 1 => -$l, -1 => $l, $l => -1],
-        '|' => [-$l => $l, $l => -$l],
-        '-' => [-1 => 1, 1 => -1],
+    $directions = [
+        '/' => [LEFT => DOWN, RIGHT => UP, UP => RIGHT, DOWN => LEFT],
+        '\\' => [LEFT => UP, RIGHT => DOWN, UP => LEFT, DOWN => RIGHT],
+        '|' => [UP => UP, DOWN => DOWN, LEFT => SPLIT_UP_DOWN, RIGHT => SPLIT_UP_DOWN],
+        '-' => [LEFT => LEFT, RIGHT => RIGHT, UP => SPLIT_LEFT_RIGHT, DOWN => SPLIT_LEFT_RIGHT],
+        '.' => [LEFT => LEFT, RIGHT => RIGHT, UP => UP, DOWN => DOWN]
     ];
 
-    return [$map, $directionMap, $l, $tiles];
+    return [$map, $directions];
 }
 
 

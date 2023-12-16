@@ -5,107 +5,86 @@ require_once('helpers.php');
 
 run(
     function() {
-        [$map, $directionMap, $l, $tiles] = parseInput();
+        [$map, $directions] = parseInput();
 
-        $splits = [[0, 1]];
-        $paths = [];
-        $tiles[0] = 1;
-
-//        $x1 = range(-$l, -1);
-//        $x2 = range($l * $l, $l * $l + $l);
-//
-//        $y1 = range(0)
-//
-//        var_dump($x1); die;
-
-        $previous = null;
-        foreach ($splits as &$split) {
-            [$current, $offset] = $split;
-
-            $min = 0;
-            $max = strlen($map);
-            if (abs($offset) === 1) {
-                $min = $current - ($current % $l);
-                $max = $min + ($l - 1);
-            }
-
-            var_dump($split);
-            var_dump($min);
-            var_dump($max);
-
-            $i = $offset;
-            while($current >= $min && $current <= $max && isset($map[$current])) {
-                if (in_array([$previous, $current], $paths)) {
-                    var_dump('loop');
-                    var_dump($paths);
-                    break;
-                }
-
-                $paths[] = [$previous, $current];
-
-                $stop = false;
-                $tile = $map[$current];
-                $tiles[$current]++;
-
-                switch ($tile) {
-                    case '/':
-                        $i = $directionMap[$tile][$previous - $current];
-                        break;
-                    case '\\':
-                        $i = $directionMap[$tile][$previous - $current];
-                        break;
-                    case '-':
-                        if (abs($previous - $current) === $l || abs($previous - $current) === 0) {
-                            $splits[] = [$current, - 1];
-                            $splits[] = [$current, 1];
-                            $previous = $current;
-
-
-                            $stop = true;
-
-                            break;
-                        }
-
-                        $i = $directionMap[$tile][$previous - $current];
-
-                        break;
-                    case '|':
-                        if (abs($previous - $current) === 1 || abs($previous - $current) === 0) {
-
-                             var_dump('spl');
-                            $splits[] = [$current, -$l];
-                            $splits[] = [$current, $l];
-                            $previous = $current;
-
-
-                            $stop = true;
-                            break;
-                        }
-
-                        $i = $directionMap[$tile][$previous - $current];
-                        break;
-                    default:
-                        // Do nothing
-                }
-
-                if ($stop) {
-                    break;
-                }
-
-                $min = 0;
-                $max = strlen($map);
-                if (abs($i) === 1) {
-                    $min = $current - ($current % $l);
-                    $max = $min + ($l - 1);
-                }
-
-                $previous = $current;
-                $current += $i;
-            }
+        $entryPoints = [];
+        for ($i = 0; $i < count($map); $i++) {
+            $entryPoints[] = [0, $i, DOWN];
+            $entryPoints[] = [$i, 0, RIGHT];
+            $entryPoints[] = [count($map) - 1, $i, UP];
+            $entryPoints[] = [$i, count($map) - 1, LEFT];
         }
 
-        $result = count(array_filter($tiles, fn(int $tileCount) => $tileCount > 0));
+        $results = [];
+        $scorecards = [];
+        foreach ($entryPoints as $i => $entryPoint) {
+            echo sprintf("Entrypoint %d of %d\n", $i, count($entryPoints));
 
-        echo "Result: {$result}\n"; // Test: 51 | Input: 7593 too high
+            $scorecards[$i] = $map;
+            $coordinates = [$entryPoint];
+            $moves = [];
+            foreach ($coordinates as &$coordinate) {
+                [$x, $y, $source] = $coordinate;
+                while(isset($map[$x][$y])) {
+                    $scorecards[$i][$x][$y] = '#';
+
+                    if (in_array([$x, $y, $source], $moves)) {
+                        break;
+                    }
+
+                    $moves[] = [$x, $y, $source];
+
+                    $stop = false;
+                    $direction = $directions[$map[$x][$y]][$source];
+
+                    switch ($direction) {
+                        case UP:
+                            $x--;
+                            break;
+                        case DOWN:
+                            $x++;
+                            break;
+                        case LEFT:
+                            $y--;
+                            break;
+                        case RIGHT:
+                            $y++;
+                            break;
+                        case SPLIT_LEFT_RIGHT:
+                            $coordinates[] = [$x, $y, LEFT];
+                            $coordinates[] = [$x, $y, RIGHT];
+                            $stop = true;
+                            break;
+                        case SPLIT_UP_DOWN:
+                            $coordinates[] = [$x, $y, UP];
+                            $coordinates[] = [$x, $y, DOWN];
+                            $stop = true;
+                            break;
+                        default:
+                            // Do nothing
+                    }
+
+                    if ($stop) {
+                        break;
+                    }
+
+                    $source = $direction;
+                }
+            }
+
+            $results[$i] = array_reduce(
+                $scorecards[$i],
+                fn(int $carry, array $row) => $carry += array_reduce(
+                    $row,
+                    fn(int $carry, string $tile) => $carry += $tile === '#' ? 1 : 0,
+                    0
+                ),
+                0
+            );
+        }
+
+        $result = max($results);
+
+        echo "Result: {$result}\n"; // Test: 51 | Input: 7676 too low
     }
 );
