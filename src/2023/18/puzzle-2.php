@@ -14,25 +14,18 @@ run(
             'U' => [0, -1],
         ];
 
-        $x1 = 0;
-        $y1 = 0;
         $a = 0;
         $b = 0;
+        $pos = 0;
         foreach ($instructions as [$direction, $steps]) {
-            [$x2, $y2] = $directionMap[$direction];
+            [$x, $y] = $directionMap[$direction];
 
             $b += $steps;
-
-            $x2 = $x1 + ($x2 * $steps);
-            $y2 = $y1 + ($y2 * $steps);
-
-            $a += ($x1 * $y2) - ($x2 * $y1);
-
-            $x1 = $x2;
-            $y1 = $y2;
+            $pos += $x * $steps;
+            $a += $y * $pos * $steps;
         }
 
-        $result = ($a / 2) + ($b / 2) + 1;
+        $result = $a + ($b / 2) + 1;
 
         echo "Result: {$result}\n"; // Test: 952408144115 | Input: 106941819907437
     }
