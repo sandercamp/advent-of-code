@@ -4,7 +4,8 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "AdventOfCode\\": "src/"
+            "AdventOfCode\\": "src/",
+            "AdventOfCode\\Day20\\": "src/2023/20/"
         }
     },
     "authors": [
