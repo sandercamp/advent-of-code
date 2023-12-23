@@ -1,7 +1,7 @@
 <?php
 
 function parseInput(): array {
-    [$w, $p] = preg_split("#\n\s*\n#Uis", file_get_contents('test.txt'));
+    [$w, $p] = preg_split("#\n\s*\n#Uis", file_get_contents('input.txt'));
 
     $workflows = [];
     foreach (explode("\n", $w) as $workflow) {
@@ -43,7 +43,7 @@ function parseInput(): array {
 
             if (in_array($part[$i], [',', '}'])) {
                 $valueBlock = false;
-                $parsedPart[$key] = (int)$value;
+                $parsedPart[$key] = [(int)$value, (int)$value];
                 $value = '';
                 continue;
             }
@@ -65,14 +65,18 @@ function parseRules(string $rule): callable {
         '>' => function(array $a, $b) {
             [$min, $max] = $a;
 
-            // false, true
-            return [[min($min, $b), min($b, $max)], [max($b + 1, $min), max($max, $b + 1)]];
+            $true = $max <= $b ? [0, 0] : [max($b + 1, $min), $max];
+            $false = $min > $b ? [0, 0] : [$min, min($b, $max)];
+
+            return [$false, $true];
         },
         '<' => function(array $a, $b) {
             [$min, $max] = $a;
 
-            // false, true
-            return [[max($b, $min), max($b, $max)], [min($b - 1, $min), min($b - 1, $max)]];
+            $true = $min >= $b ? [0, 0] : [$min, min($b - 1, $max)];
+            $false = $max < $b ? [0, 0] : [max($b, $min), $max];
+
+            return [$false, $true];
         }
     ];
 
@@ -137,36 +141,77 @@ function parseRules(string $rule): callable {
 
             $part = $false[0];
 
-            $returnValues = [...$returnValues, ...$true];
+
+            foreach ($true as $code => $parts) {
+                if (!isset($returnValues[$code])) {
+                    $returnValues[$code] = [$parts];
+                } else {
+                    $returnValues[$code][] = $parts;
+                }
+            }
         }
 
-        $returnValues[$argument] = $false[0];
+        if (!isset($returnValues[$argument])) {
+            $returnValues[$argument] = [$false[0]];
+        } else {
+            $returnValues[$argument][] = $false[0];
+        }
 
         return $returnValues;
     };
 }
 
-function processPart(array $part, array $workflows, string $name): int {
+function processPartOne(array $part, array $workflows, string $name): bool
+{
+    $workflow = $workflows[$name];
+    $outcome = $workflow($part);
+
+    foreach ($outcome as $result => $splitParts) {
+        foreach ($splitParts as $splitPart) {
+            foreach ($splitPart as $range) {
+                if (array_sum($range) === 0) {
+                    continue 2;
+                }
+            }
+
+            if ($result === 'A') {
+                return true;
+            }
+
+            if ($result === 'R') {
+                return false;
+            }
+
+            return processPartOne($part, $workflows, $result);
+        }
+    }
+
+    return false;
+}
+
+function processPartTwo(array $part, array $workflows, string $name): int {
     $workflow = $workflows[$name];
     $outcome = $workflow($part);
     $count = 0;
     $i = 0;
-    foreach ($outcome as $result => $splitPart) {
-        $i++;
-        if ($result === 'A') {
-            var_dump($splitPart);
-            $x = ($splitPart['x'][1] - $splitPart['x'][0]) + 1;
-            $m = ($splitPart['m'][1] - $splitPart['m'][0]) + 1;
-            $a = ($splitPart['a'][1] - $splitPart['a'][0]) + 1;
-            $s = ($splitPart['s'][1] - $splitPart['s'][0]) + 1;
+    foreach ($outcome as $result => $splitParts) {
+        foreach ($splitParts as $splitPart) {
 
-            $count += $x * $m * $a * $s;
+            $i++;
+            if ($result === 'A') {
+                $x = ($splitPart['x'][1] - $splitPart['x'][0]) + 1;
+                $m = ($splitPart['m'][1] - $splitPart['m'][0]) + 1;
+                $a = ($splitPart['a'][1] - $splitPart['a'][0]) + 1;
+                $s = ($splitPart['s'][1] - $splitPart['s'][0]) + 1;
 
-            continue;
-        }
+                $count += $x * $m * $a * $s;
 
-        if ($result !== 'R') {
-            $count += processPart($splitPart, $workflows, $result);
+                continue;
+            }
+
+            if ($result !== 'R') {
+                $count += processPartTwo($splitPart, $workflows, $result);
+            }
         }
     }
 

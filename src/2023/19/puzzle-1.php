@@ -9,8 +9,10 @@ run(
 
         $result = 0;
         foreach ($parts as $part) {
-            if (processPart($part, $workflows, 'in')) {
-                $result += array_sum($part);
+            if (processPartOne($part, $workflows, 'in')) {
+                foreach ($part as [$min, $max]) {
+                    $result += $min;
+                }
             }
         }
 

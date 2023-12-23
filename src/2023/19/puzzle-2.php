@@ -14,11 +14,13 @@ run(
             's' => [1, 4000],
         ];
 
-        $result = processPart($part, $workflows, 'in');
+        $result = processPartTwo($part, $workflows, 'in');
 
         // 586354236668000
         // 167409079868000
         // 140809783868000
+        // 134343280273968
+        // 84775791548965
 
         echo "Result: {$result}\n"; // Test: 167409079868000 | Input: 84775791548965 too low
     }
